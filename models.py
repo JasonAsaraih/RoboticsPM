@@ -54,6 +54,15 @@ class Project:
     def remove(self, task_id):
         removed = self.descendants(task_id) | {task_id}
         self.tasks = [task for task in self.tasks if task.id not in removed]
+    def roll_up_dates(self):
+        for _ in self.tasks:
+            changed = False
+            for parent in self.tasks:
+                children = self.children(parent.id)
+                if children:
+                    bounds = min(t.start_date for t in children), max(t.end_date for t in children)
+                    if bounds != (parent.start_date, parent.end_date): parent.start_date, parent.end_date = bounds; changed = True
+            if not changed: break
     def validate(self):
         ids = {task.id for task in self.tasks}
         if len(ids) != len(self.tasks): raise ValueError("Task IDs must be unique")

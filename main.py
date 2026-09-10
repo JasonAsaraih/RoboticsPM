@@ -4,7 +4,7 @@ from datetime import date, timedelta
 from pathlib import Path
 from PySide6.QtCore import QSize, Qt
 from PySide6.QtGui import QAction
-from PySide6.QtWidgets import (QApplication, QComboBox, QFileDialog, QHBoxLayout,
+from PySide6.QtWidgets import (QApplication, QCheckBox, QComboBox, QFileDialog, QGroupBox, QHBoxLayout,
     QLabel, QMainWindow, QMessageBox, QSplitter, QToolBar, QTreeWidget, QTreeWidgetItem, QVBoxLayout, QWidget)
 from gantt_widget import GanttWidget
 from models import Project, SECTIONS, Task
@@ -41,7 +41,10 @@ class MainWindow(QMainWindow):
             action = QAction(text, self); action.setShortcut(shortcut); action.triggered.connect(callback); file_menu.addAction(action)
         root = QWidget(); layout = QVBoxLayout(root); layout.setContentsMargins(14, 12, 14, 12)
         title = QLabel("ROBOTICS MASTER SCHEDULE"); title.setStyleSheet(f"color:{NAVY};font-size:22px;font-weight:800")
-        controls = QHBoxLayout(); controls.addStretch(); controls.addWidget(QLabel("Timeline scale"))
+        controls = QHBoxLayout(); box = QGroupBox("Engineering sections"); checks = QHBoxLayout(box); self.filters = {}
+        for section in SECTIONS:
+            check = QCheckBox(section); check.setChecked(True); check.toggled.connect(self.rebuild); checks.addWidget(check); self.filters[section] = check
+        controls.addWidget(box); controls.addStretch(); controls.addWidget(QLabel("Timeline scale"))
         self.scale = QComboBox(); self.scale.addItems(("Day", "Week", "Month")); self.scale.setCurrentText("Week"); controls.addWidget(self.scale)
         self.tree = QTreeWidget(); self.tree.setHeaderLabels(("Task", "Responsible Engineer", "Progress")); self.tree.setColumnCount(3)
         self.tree.setAlternatingRowColors(True); self.tree.setUniformRowHeights(True); self.tree.setVerticalScrollMode(QTreeWidget.ScrollPerPixel)
@@ -79,8 +82,9 @@ class MainWindow(QMainWindow):
         return result
     def rebuild(self, *_):
         expanded = {item.data(0, ROLE) for item in self.all_items() if item.isExpanded()}; selected = self.selected_id()
-        self.project.validate(); self.tree.blockSignals(True); self.tree.clear()
+        self.project.roll_up_dates(); self.tree.blockSignals(True); self.tree.clear()
         for section in SECTIONS:
+            if not self.filters[section].isChecked(): continue
             root = QTreeWidgetItem((section.upper(), "", "")); root.setData(0, ROLE, f"section:{section}"); root.setSizeHint(0, QSize(0, ROW_HEIGHT))
             root.setBackground(0, Qt.lightGray); self.tree.addTopLevelItem(root); root.setExpanded(not expanded or f"section:{section}" in expanded)
             def add_children(parent_item, parent_id=None):
