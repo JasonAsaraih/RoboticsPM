@@ -23,3 +23,10 @@ Projects are saved locally as readable JSON through the **File** menu. The initi
 - Responsible Engineer, progress, notes, and critical-path fields
 - Day, week, and month scales with a today marker
 - Local JSON Open, Save, and Save As support
+- Independent engineering-section filters
+- Responsible Engineer, progress, notes, and critical-path fields
+- Day, week, and month scales with a today marker
+- Local JSON Open, Save, and Save As support
+RoboticsPM is a desktop project-management application for planning a robotics team's engineering schedule.
+
+Development changes should be proposed on a feature branch and merged into `main` through a pull request.
