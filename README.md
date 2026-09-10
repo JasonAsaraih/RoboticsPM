@@ -19,6 +19,10 @@ Projects are saved locally as readable JSON through the **File** menu. The initi
 
 - Resizable, synchronized hierarchy and Gantt timeline
 - Multi-level tasks with automatic parent date roll-up
+- Expandable engineering-section groups for quickly showing or hiding subteams
+- Responsible Engineer, progress, notes, and critical-path fields
+- Day, week, and month scales with a today marker
+- Local JSON Open, Save, and Save As support
 - Independent engineering-section filters
 - Responsible Engineer, progress, notes, and critical-path fields
 - Day, week, and month scales with a today marker
